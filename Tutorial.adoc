@@ -1,0 +1,268 @@
+= Go Tutorial
+
+=== What reasons was GoLang developed for?
+.Click to see solution
+[%collapsible]
+====
+At Google there is a need for a language that is easy to maintain, that has quick compilation times (like C), is highly practical on multithreading. Since a huge part of the servers at Google were written in an abundance of Spagetti-code containing  of Java, CPP and Python there was a language needed that is as easy to learn as Python, as quick as CPP (quick compilation) and contains some type of inheritance as it is the case with Java (interface) but only a minimum amount.
+====
+=== Which languages contributed to the development of Go?
+.Click to see solution
+[%collapsible]
+====
+Primarily C. But it includes some Pascal/Modula/Oberon-Syntax. The Concurrency is taken from Limbo/Newsqueak.
+====
+=== Name some core features of the language design?
+.Click to see solution
+[%collapsible]
+====
+1. interfaces: contain unimplemented methods
+2. structs, no classes exist and those structs can't be inherited. Only interfaces can be inherited
+3. Pointers only exist for assigning objects to new variables, nothing more. Memory can't be changed.
+4. Hash-tables-type maps
+5. no structural exception handling. Only conditional error-handling.[source,]
+----
+f,err := os.Open("filename.ext")
+if err != nil {
+log.Fatal(err)
+}
+//do something with the open *File f
+----
+====
+=== What application and extension is needed to compile and run the code?
+.Click to see solution
+[%collapsible]
+====
+*go run* main.go
+
+extension: .go
+====
+
+=== Recode this code block using no keywords!
+----
+var x int = 5
+var y int = 7
+var sum = x + y
+fmt.Println(sum)
+----
+.Click to see solution
+[%collapsible]
+====
+----
+x := 5
+y := 7
+sum := x +y
+fmt.Println(sum)
+----
+====
+
+=== Write 2 types of loops and a conditional!
+.Click to see solution
+[%collapsible]
+====
+Two example loops
+----
+for k := 0; k <= 10; k++ {
+		if k%2 == 0 {
+			continue
+		}
+		fmt.Println(k)
+	}
+
+	for i <= 10 {
+		fmt.Println(i)
+		i = i + 1
+	}
+
+----
+One example conditional
+----
+x := 5
+	if x > 6 {
+		fmt.Println("More than 6")
+	} else if x < 2 {
+    
+	} else {
+
+	}
+----
+====
+
+=== Is this code valid?
+----
+j := 5
+switch j {
+case 1,2:
+    fmt.Println(j,"is equal to 5")
+case j<5:
+    fmt.Println(j,"is less than 5")
+case j>5:
+    fmt.Println(j, "is more than 5")
+}
+----
+.Click to see solution
+[%collapsible]
+====
+Yes it is. You can use several values in one case as well as < and >
+====
+=== Write Code: Create Array and assign values!
+.Click to see solution
+[%collapsible]
+====
+----
+var intArr [5]int
+intArr[0] = 5
+intArr[1] = 10
+...
+----
+OR
+----
+a := [5]int{1, 2, 3, 4, 5}
+----
+====
+=== Write Code: Create Slice, append some number and print until 2nd element!
+.Click to see solution
+[%collapsible]
+====
+----
+s := make([]int, 3)
+s = append(s, 4)
+fmt.Println(s[:3])
+----
+====
+=== Write Code: Create random map, assign values and delete the first key!
+.Click to see solution
+[%collapsible]
+====
+----
+m := make(map[string]int)
+m["a"] = 0
+m["b"] = 1
+delete(m, "a")
+----
+OR
+----
+m2 := map[string]int{"key1": 1, "key2": 2}
+delete(m2, "key1")
+----
+====
+=== Object Orientation
+There is some kind of object orientation in Go. Create the interface geometry with two methods area() and perimeter(). Then create two structs rect and circle. Those structures hold the two fields width, height (rect) and radius (circle). Implement those two methods on both structs by both returning the area and the perimeter. Then write a measures-Function that both print area and perimeter if a geometry-sub-struct (rect and circle) is used. Instantiate both structs and use measures to print both their computations in main!
+
+.Click to see solution
+[%collapsible]
+====
+----
+type geometry interface {
+	area() float64
+	perimeter() float64
+}
+type rect struct {
+	width, height float64
+}
+type circle struct {
+	radius float64
+}
+
+func (r rect) area() float64 {
+	return r.width * r.height
+}
+func (c circle) area() float64 {
+	return math.Pi * c.radius * c.radius
+}
+
+func (r rect) perimeter() float64 {
+	return 2*r.width + 2*r.height
+}
+func (c circle) perimeter() float64 {
+	return 2 * math.Pi * c.radius
+}
+func measures(g geometry) {
+	fmt.Println(g)
+	fmt.Println(g.area())
+	fmt.Println(g.perimeter())
+}
+func main() {
+	r := rect{width: 3, height: 4}
+	c := circle{radius: 5}
+	measures(r)
+	measures(c)
+}
+----
+====
+=== Concurrency
+Use the function below to create a multithreaded main-function, that run several count functions at the same time ("dog" - 5 seconds, "horse"- 10 seconds,"sheep" - 15 seconds) and then waits until everything is finished!
+
+----
+func count(thing string, idx int) {
+	for i := 1; i <= idx; i++ {
+		fmt.Println(i, thing)
+		time.Sleep(time.Millisecond * 1000)
+	}
+}
+----
+.Click to see solution
+[%collapsible]
+====
+----
+func main() {
+	//WaitGroup, code below go func will only continue
+	//if all go functions inside have finished!
+	var wg sync.WaitGroup
+	//Three go routines
+	wg.Add(3)
+	go func() {
+		count("dog", 5)
+		wg.Done()
+	}()
+	go func() {
+		count("horse", 10)
+		wg.Done()
+	}()
+	go func() {
+		count("sheep", 15)
+		wg.Done()
+	}()
+
+	wg.Wait()
+
+	fmt.Println("More Code to come if everything is done")
+}
+
+func count(thing string, idx int) {
+	for i := 1; i <= idx; i++ {
+		fmt.Println(i, thing)
+		time.Sleep(time.Millisecond * 1000)
+	}
+}
+----
+====
+=== RestApi: What has to be imported/declared to create a Get-Request with mux for the server? Create a single getBook-Function as shown in the presentation-slides.
+.Click to see solution
+[%collapsible]
+====
+----
+import (
+	"net/http"
+	"github.com/gorilla/mux"
+)
+
+r := mux.NewRouter()
+r.HandleFunc("/books/{id}", getBook).Methods("GET")
+----
+And Function:
+----
+func getBook(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	params := mux.Vars(r) // Gets params
+	// Loop through books and find one with the id from the params
+	for _, item := range books {
+		if item.ID == params["id"] {
+			json.NewEncoder(w).Encode(item)
+			return
+		}
+	}
+	json.NewEncoder(w).Encode(&Book{})
+}
+----
+====
